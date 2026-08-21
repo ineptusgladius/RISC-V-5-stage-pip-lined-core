@@ -26,6 +26,7 @@ The CPU executes instructions across five independent stages to achieve a theore
 3.  **Execute (EX):** The Arithmetic Logic Unit (ALU) performs mathematical/logical operations, calculates branch target addresses, and handles data forwarding.
 4.  **Memory Access (MEM):** Reads from or writes to the Data Memory for load/store instructions.
 5.  **Write Back (WB):** Writes ALU results or memory read data back to the destination register in the Register File.
+## Implementation
 <img width="977" height="563" alt="117547053-f932fe00-b046-11eb-91af-9291291d4f52" src="https://github.com/user-attachments/assets/8bdc3086-c50a-4564-b8f6-0927410c59ea" />
 
 
