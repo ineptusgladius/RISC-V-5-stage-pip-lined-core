@@ -1,1 +1,1 @@
-# RISC-V-5-stage-pip-lined-core
+# RISC-V 5stage piplined core
