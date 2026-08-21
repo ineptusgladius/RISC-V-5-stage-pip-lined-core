@@ -60,5 +60,6 @@ Control hazards occur when a branch (e.g., `beq`) or jump (e.g., `j`) instructio
 *   **Action Taken:**
     *   `Flush_IF`: Clears the IF/ID pipeline register, discarding the incorrectly fetched instruction.
     *   `Flush_ID` *(if branch is resolved in EX)*: Clears the ID/EX pipeline register as well.
-
+## condition table
+<img width="829" height="259" alt="Screenshot 2026-08-21 at 2 01 02 PM" src="https://github.com/user-attachments/assets/76ffd7ae-dbea-48f7-8625-97f8f8ffa33a" />
 
