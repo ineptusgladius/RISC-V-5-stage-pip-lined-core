@@ -28,5 +28,69 @@ The CPU executes instructions across five independent stages to achieve a theore
 5.  **Write Back (WB):** Writes ALU results or memory read data back to the destination register in the Register File.
 ## Implementation
 <img width="977" height="563" alt="117547053-f932fe00-b046-11eb-91af-9291291d4f52" src="https://github.com/user-attachments/assets/8bdc3086-c50a-4564-b8f6-0927410c59ea" />
+# Hazard Detection and Control Unit
 
+This module acts as the "traffic controller" for the 5-stage pipelined CPU. It monitors the instructions flowing through the pipeline and detects situations where the pipeline must be paused (stalled) or cleared (flushed) to ensure correct program execution.
+
+## 🎯 Overview
+
+In a classic 5-stage pipeline, instructions overlap. This overlap can cause **hazards** when an instruction depends on the results of a previous instruction that hasn't finished yet, or when the flow of the program changes abruptly. 
+
+This unit is responsible for handling two main types of hazards:
+1. **Load-Use Data Hazards:** Handled via Pipeline Stalling.
+2. **Control Hazards (Branches/Jumps):** Handled via Pipeline Flushing.
+
+*(Note: Standard data hazards are handled by a separate Data Forwarding Unit, which routes data directly between pipeline registers without stalling).*
+
+## 🛑 Hazards Handled
+
+### 1. Load-Use Hazard (Stalling)
+A load-use hazard occurs when an instruction needs to read a register that is currently being loaded from memory by the immediately preceding instruction. Because the data isn't available from memory until the `MEM` stage, forwarding cannot solve this.
+
+*   **Detection Condition:** The instruction in the Execute (EX) stage is a memory read (e.g., `lw`), AND its destination register matches either of the source registers of the instruction in the Decode (ID) stage.
+*   **Action Taken:** 
+    *   `Stall_IF`: Freezes the Program Counter (PC) so the same instruction is fetched again.
+    *   `Stall_ID`: Freezes the IF/ID pipeline register so the decoded instruction isn't lost.
+    *   `Flush_EX`: Inserts a "bubble" (a NOP - No Operation) into the ID/EX pipeline register to let the load instruction finish.
+
+### 2. Control Hazard (Flushing)
+Control hazards occur when a branch (e.g., `beq`) or jump (e.g., `j`) instruction is executed. The pipeline has already fetched the next sequential instructions, but if the branch is taken, those fetched instructions are incorrect.
+
+*   **Detection Condition:** A branch or jump is evaluated as "taken" by the ALU or Decode unit.
+*   **Action Taken:**
+    *   `Flush_IF`: Clears the IF/ID pipeline register, discarding the incorrectly fetched instruction.
+    *   `Flush_ID` *(if branch is resolved in EX)*: Clears the ID/EX pipeline register as well.
+
+## 🔌 Module Interface
+
+Below are the standard inputs and outputs for this unit. *(Note: Signal names may vary based on your specific implementation).*
+
+| Port Name | Direction | Source / Destination | Description |
+| :--- | :---: | :--- | :--- |
+| `rs1_addr_id` | Input | IF/ID Register | Source register 1 of the instruction in Decode. |
+| `rs2_addr_id` | Input | IF/ID Register | Source register 2 of the instruction in Decode. |
+| `rd_addr_ex` | Input | ID/EX Register | Destination register of the instruction in Execute. |
+| `mem_read_ex` | Input | ID/EX Control | Flag indicating if the instruction in Execute is a Load. |
+| `branch_taken` | Input | ID or EX Stage | Flag indicating if a branch condition is met. |
+| `jump_taken` | Input | ID Stage | Flag indicating an unconditional jump. |
+| `stall_if` | Output | PC Register | High to freeze the Program Counter. |
+| `stall_id` | Output | IF/ID Register | High to freeze the IF/ID register. |
+| `flush_id` | Output | IF/ID Register | High to clear the IF/ID register (insert NOP). |
+| `flush_ex` | Output | ID/EX Register | High to clear the ID/EX register (insert NOP). |
+
+## 🧠 Logic Equations
+
+To help with debugging your RTL, here is the simplified boolean logic used inside this module:
+
+```verilog
+// Load-Use Hazard Detection
+assign load_use_hazard = mem_read_ex && ((rd_addr_ex == rs1_addr_id) || (rd_addr_ex == rs2_addr_id));
+
+// Stall signals
+assign stall_pc = load_use_hazard;
+assign stall_if_id = load_use_hazard;
+
+// Flush signals
+assign flush_id_ex = load_use_hazard || branch_taken || jump_taken;
+assign flush_if_id = branch_taken || jump_taken;
 
