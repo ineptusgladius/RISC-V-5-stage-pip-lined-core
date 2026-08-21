@@ -1,7 +1,6 @@
 # 5-Stage Pipelined CPU Core
 
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
-![Language](https://img.shields.io/badge/language-[Verilog%20%2]-orange)
 
 A fully functional, 32-bit **[RISC-V / MIPS]** microprocessor core featuring a classic 5-stage instruction pipeline. This project implements fundamental computer architecture concepts, including hazard detection, data forwarding, and branch prediction to maximize instruction throughput.
 
