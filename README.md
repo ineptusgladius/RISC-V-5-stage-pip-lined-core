@@ -62,4 +62,5 @@ Control hazards occur when a branch (e.g., `beq`) or jump (e.g., `j`) instructio
     *   `Flush_ID` *(if branch is resolved in EX)*: Clears the ID/EX pipeline register as well.
 ## condition table
 <img width="829" height="259" alt="Screenshot 2026-08-21 at 2 01 02 PM" src="https://github.com/user-attachments/assets/76ffd7ae-dbea-48f7-8625-97f8f8ffa33a" />
+<img width="885" height="543" alt="Screenshot 2026-08-21 at 2 03 12 PM" src="https://github.com/user-attachments/assets/26fbe843-7493-4a4f-a1d6-d2b8432a4ed8" />
 
